@@ -3,26 +3,28 @@ package com.androideradev.www.diceroller
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
 
-private const val ROLL_DICE_NUMBER_KEY = "roll_dice_number_key"
+private const val ROLL_DICE_RESOURCE_KEY = "roll_dice_number_key"
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var resultTextView: TextView
+    private lateinit var diceImageView: ImageView
+    private var diceDrawableResource = R.drawable.dice_1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val rollButton = findViewById<Button>(R.id.roll_button)
-        resultTextView = findViewById(R.id.result_text_view)
-        resultTextView.text =
-            if (savedInstanceState == null) "0" else savedInstanceState.getString(
-                ROLL_DICE_NUMBER_KEY
-            )
+        diceImageView = findViewById(R.id.dice_image_view)
+
+        diceDrawableResource =
+            savedInstanceState?.getInt(ROLL_DICE_RESOURCE_KEY) ?: R.drawable.dice_1
+
+        diceImageView.setImageResource(diceDrawableResource)
+
         rollButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
                 rollDice()
@@ -32,16 +34,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun rollDice() {
         val dice = Dice()
-        val diceRoll = dice.roll()
-        resultTextView.text = diceRoll.toString()
-
-       Toast.makeText(this@MainActivity, "Dice Rolled! $diceRoll", Toast.LENGTH_SHORT).show()
+        when (dice.roll()) {
+            1 -> diceDrawableResource = R.drawable.dice_1
+            2 -> diceDrawableResource = R.drawable.dice_2
+            3 -> diceDrawableResource = R.drawable.dice_3
+            4 -> diceDrawableResource = R.drawable.dice_4
+            5 -> diceDrawableResource = R.drawable.dice_5
+            6 -> diceDrawableResource = R.drawable.dice_6
+        }
+        diceImageView.setImageResource(diceDrawableResource)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putString(ROLL_DICE_NUMBER_KEY, resultTextView.text.toString())
+        outState.putInt(ROLL_DICE_RESOURCE_KEY, diceDrawableResource)
     }
 }
 
