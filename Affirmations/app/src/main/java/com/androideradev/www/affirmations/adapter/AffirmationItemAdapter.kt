@@ -1,9 +1,11 @@
 package com.androideradev.www.affirmations.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.androideradev.www.affirmations.R
@@ -24,6 +26,7 @@ class AffirmationItemAdapter(
     class AffirmationItemViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.findViewById(R.id.affirmation_item_title_text_view)
+        val imageView: ImageView = itemView.findViewById(R.id.affirmation_image_view)
     }
 
     /**
@@ -41,6 +44,7 @@ class AffirmationItemAdapter(
     override fun onBindViewHolder(holder: AffirmationItemViewHolder, position: Int) {
         val affirmation = affirmations[position]
         holder.textView.text = affirmation.affirmationText
+        holder.imageView.setImageResource(affirmation.imageResourceId)
     }
 
     /**
