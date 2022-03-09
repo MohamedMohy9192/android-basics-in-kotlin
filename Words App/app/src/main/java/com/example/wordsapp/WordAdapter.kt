@@ -85,7 +85,7 @@ class WordAdapter(private val letterId: String, context: Context) :
         holder.button.text = item
 
         holder.button.setOnClickListener {
-            val queryUrl = Uri.parse("${DetailActivity.SEARCH_PREFIX}$item")
+            val queryUrl = Uri.parse("${WordListFragment.SEARCH_PREFIX}$item")
             Intent(Intent.ACTION_VIEW, queryUrl).apply {
                 context.startActivity(this)
             }
