@@ -21,8 +21,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.wordsapp.databinding.ActivityDetailBinding
 
-
 class DetailActivity : AppCompatActivity() {
+
+    companion object {
+        const val LETTER_KEY_EXTRA = "letter"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +38,9 @@ class DetailActivity : AppCompatActivity() {
 
         // Retrieve the LETTER from the Intent extras
         // intent.extras.getString returns String? (String or null)
-        // so toString() guarantees that the value will be a String
-        val letterId = "A"
+        // so toString() can be called on a nullable receiver and return non-nullable String
+        // if the receiver is null its return "null" String
+        val letterId = intent?.extras?.getString(LETTER_KEY_EXTRA).toString()
 
         val recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
