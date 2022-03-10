@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
 
-    private var score = 0
+    private var _score = 0
+    val score: Int
+        get() = _score
     private var _currentWordCount = 0
     val currentWordCount: Int
         get() = _currentWordCount
@@ -49,9 +51,15 @@ class GameViewModel : ViewModel() {
             // Add the world to tracking list
             wordsList.add(currentWord)
         }
-
-
     }
+
+    /* Returns true if the current word count is less than MAX_NO_OF_WORDS.
+     Updates the next word.
+     */
+    fun nextWord() = if (currentWordCount < MAX_NO_OF_WORDS) {
+        getNextWord()
+        true
+    } else false
 
     override fun onCleared() {
         super.onCleared()
