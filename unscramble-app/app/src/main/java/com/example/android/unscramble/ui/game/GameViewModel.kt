@@ -1,20 +1,21 @@
 package com.example.android.unscramble.ui.game
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
 
     private var _score = 0
-    val score: Int
-        get() = _score
+    val score: Int get() = _score
     private var _currentWordCount = 0
-    val currentWordCount: Int
-        get() = _currentWordCount
+    val currentWordCount: Int get() = _currentWordCount
 
-    private lateinit var _currentScrambledWord: String
-    val currentScrambledWord: String
-        get() = _currentScrambledWord
+    // val because the value of the LiveData/MutableLiveData object will remain the same,
+    // and only the data stored within the object will change.
+    private val _currentScrambledWord = MutableLiveData<String>()
+    val currentScrambledWord: LiveData<String> get() = _currentScrambledWord
 
     private var wordsList: MutableList<String> = mutableListOf()
     private lateinit var currentWord: String
@@ -46,7 +47,7 @@ class GameViewModel : ViewModel() {
             getNextWord()
         } else {
             // The word not used before assign it to the _currentScrambledWord
-            _currentScrambledWord = String(tempWord)
+            _currentScrambledWord.value = String(tempWord)
             // Increase the currentWordCount
             _currentWordCount++
             // Add the world to tracking list

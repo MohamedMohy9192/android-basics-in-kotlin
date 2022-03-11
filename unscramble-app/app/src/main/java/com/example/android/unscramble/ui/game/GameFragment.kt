@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.android.unscramble.R
 import com.example.android.unscramble.databinding.GameFragmentBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -46,8 +47,10 @@ class GameFragment : Fragment() {
         // Inflate the layout XML file and return a binding object instance
         binding = GameFragmentBinding.inflate(inflater, container, false)
         Log.d("GameFragment", "GameFragment created/re-created!")
-        Log.d("GameFragment", "Word: ${viewModel.currentScrambledWord} " +
-                "Score: ${viewModel.score} WordCount: ${viewModel.currentWordCount}")
+        Log.d(
+            "GameFragment", "Word: ${viewModel.currentScrambledWord} " +
+                    "Score: ${viewModel.score} WordCount: ${viewModel.currentWordCount}"
+        )
         return binding.root
     }
 
@@ -57,12 +60,17 @@ class GameFragment : Fragment() {
         // Setup a click listener for the Submit and Skip buttons.
         binding.submit.setOnClickListener { onSubmitWord() }
         binding.skip.setOnClickListener { onSkipWord() }
-        // Update the UI
-        updateNextWordOnScreen()
+
         binding.score.text = getString(R.string.score, 0)
         binding.wordCount.text = getString(
             R.string.word_count, 0, MAX_NO_OF_WORDS
         )
+
+        // Observe the currentScrambledWord LiveData.
+        viewModel.currentScrambledWord.observe(viewLifecycleOwner, { newWord ->
+            // Update the UI
+            binding.textViewUnscrambledWord.text = newWord
+        })
     }
 
     /*
@@ -78,10 +86,8 @@ class GameFragment : Fragment() {
         if (viewModel.isUserWordCorrect(playerWord)) {
             // Reset the text field
             setErrorTextField(false)
-            if (viewModel.nextWord()) {
-                //Another word is available, so update the scrambled word on screen
-                updateNextWordOnScreen()
-            } else {
+            // If there's no more words left in this round, show the alert dialog with the final score.
+            if (!viewModel.nextWord()) {
                 // Game is over, so display the alert dialog with the final score.
                 showFinalScoreDialog()
             }
@@ -96,11 +102,10 @@ class GameFragment : Fragment() {
      * Increases the word count.
      */
     private fun onSkipWord() {
-        // Check if there's another word left in this round
+        // Check if there's another word left in this round, if so generate another word
         if (viewModel.nextWord()) {
-            // Display the word on screen and reset the text field
+            // Reset the text field
             setErrorTextField(false)
-            updateNextWordOnScreen()
         } else {
             // There's no more words left in this round, show the alert dialog with the final score.
             showFinalScoreDialog()
@@ -112,14 +117,12 @@ class GameFragment : Fragment() {
      * restart the game.
      */
     private fun restartGame() {
-       // In the Congratulations! alert dialog, click PLAY AGAIN.
+        // In the Congratulations! alert dialog, click PLAY AGAIN.
         // The app won't let you play again because the word count has now reached the value MAX_NO_OF_WORDS.
         // You need to reset the word count to 0 to play the game again from the beginning.
         viewModel.reinitializedData()
         // Reset the text field
         setErrorTextField(false)
-        // Display a new word
-        updateNextWordOnScreen()
     }
 
     /*
@@ -140,13 +143,6 @@ class GameFragment : Fragment() {
             binding.textField.isErrorEnabled = false
             binding.textInputEditText.text = null
         }
-    }
-
-    /*
-     * Displays the next scrambled word on screen.
-     */
-    private fun updateNextWordOnScreen() {
-        binding.textViewUnscrambledWord.text = viewModel.currentScrambledWord
     }
 
     /*
