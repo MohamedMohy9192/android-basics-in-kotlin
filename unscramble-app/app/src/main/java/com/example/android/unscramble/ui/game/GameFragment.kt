@@ -68,6 +68,21 @@ class GameFragment : Fragment() {
     * Displays the next scrambled word.
     */
     private fun onSubmitWord() {
+        val playerWord = binding.textInputEditText.text.toString()
+        if (viewModel.isUserWordCorrect(playerWord)) {
+            setErrorTextField(false)
+            if (viewModel.nextWord()) {
+                //Another word is available, so update the scrambled word on screen
+                updateNextWordOnScreen()
+            } else {
+                // Game is over, so display the alert dialog with the final score.
+                showFinalScoreDialog()
+            }
+        } else {
+            // If the user word is incorrect, show an error message in the text field.
+            setErrorTextField(true)
+        }
+
 
     }
 

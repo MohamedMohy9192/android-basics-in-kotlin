@@ -31,7 +31,7 @@ class GameViewModel : ViewModel() {
      */
     fun getNextWord() {
         // Get random word from the words list
-        val currentWord = allWordsList.random()
+        currentWord = allWordsList.random()
         // Convert the word string to characters array
         val tempWord = currentWord.toCharArray()
         // keep shuffling the word characters if it's as the original word
@@ -60,6 +60,20 @@ class GameViewModel : ViewModel() {
         getNextWord()
         true
     } else false
+
+    /*Helper method to validate player word*/
+    private fun increaseScore() {
+        _score += SCORE_INCREASE
+    }
+
+    fun isUserWordCorrect(playerWord: String): Boolean {
+        //  Validate the player's word and increase the score if the guess is correct.
+        if (playerWord.equals(currentWord, true)) {
+            increaseScore()
+            return true
+        }
+        return false
+    }
 
     override fun onCleared() {
         super.onCleared()
