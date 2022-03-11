@@ -21,7 +21,8 @@ class GameViewModel : ViewModel() {
 
     init {
         Log.d("GameFragment", "GameViewModel created!")
-        // Call getNextWord() to initialize the lateinit property while the view model instance is created
+        // Call getNextWord() to initialize the late init properties (_currentScrambledWord, currentWord)
+        // while the view model instance is created
         getNextWord()
     }
 
@@ -44,7 +45,7 @@ class GameViewModel : ViewModel() {
             // Call getNextWork method to generate another random word from the original words list
             getNextWord()
         } else {
-            // The word not used before assign it to the currentScrambledWord
+            // The word not used before assign it to the _currentScrambledWord
             _currentScrambledWord = String(tempWord)
             // Increase the currentWordCount
             _currentWordCount++
@@ -61,11 +62,12 @@ class GameViewModel : ViewModel() {
         true
     } else false
 
-    /*Helper method to validate player word*/
+
     private fun increaseScore() {
         _score += SCORE_INCREASE
     }
 
+    /*Helper method to validate player word*/
     fun isUserWordCorrect(playerWord: String): Boolean {
         //  Validate the player's word and increase the score if the guess is correct.
         if (playerWord.equals(currentWord, true)) {
@@ -73,6 +75,16 @@ class GameViewModel : ViewModel() {
             return true
         }
         return false
+    }
+
+    /*
+    * Re-initializes the game data to restart the game.
+    */
+    fun reinitializedData() {
+        _score = 0
+        _currentWordCount = 0
+        wordsList.clear()
+        getNextWord()
     }
 
     override fun onCleared() {

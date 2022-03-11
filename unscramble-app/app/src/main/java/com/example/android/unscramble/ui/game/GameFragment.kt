@@ -70,8 +70,13 @@ class GameFragment : Fragment() {
     * Displays the next scrambled word.
     */
     private fun onSubmitWord() {
+        // extracting the player's guessed word
         val playerWord = binding.textInputEditText.text.toString()
+        // Validate the user's guess by checking against the original word.
+        // If the word is correct, then go to the next word (or show the dialog if the game has ended).
+        // If the word is incorrect, show an error on the text field and stay on the current word.
         if (viewModel.isUserWordCorrect(playerWord)) {
+            // Reset the text field
             setErrorTextField(false)
             if (viewModel.nextWord()) {
                 //Another word is available, so update the scrambled word on screen
@@ -91,10 +96,13 @@ class GameFragment : Fragment() {
      * Increases the word count.
      */
     private fun onSkipWord() {
+        // Check if there's another word left in this round
         if (viewModel.nextWord()) {
+            // Display the word on screen and reset the text field
             setErrorTextField(false)
             updateNextWordOnScreen()
         } else {
+            // There's no more words left in this round, show the alert dialog with the final score.
             showFinalScoreDialog()
         }
     }
@@ -104,7 +112,13 @@ class GameFragment : Fragment() {
      * restart the game.
      */
     private fun restartGame() {
+       // In the Congratulations! alert dialog, click PLAY AGAIN.
+        // The app won't let you play again because the word count has now reached the value MAX_NO_OF_WORDS.
+        // You need to reset the word count to 0 to play the game again from the beginning.
+        viewModel.reinitializedData()
+        // Reset the text field
         setErrorTextField(false)
+        // Display a new word
         updateNextWordOnScreen()
     }
 
