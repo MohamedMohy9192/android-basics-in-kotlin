@@ -7,10 +7,11 @@ import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
 
-    private var _score = 0
-    val score: Int get() = _score
-    private var _currentWordCount = 0
-    val currentWordCount: Int get() = _currentWordCount
+    // initialize to 0
+    private val _score = MutableLiveData(0)
+    val score: LiveData<Int> get() = _score
+    private val _currentWordCount = MutableLiveData(0)
+    val currentWordCount: LiveData<Int> get() = _currentWordCount
 
     // val because the value of the LiveData/MutableLiveData object will remain the same,
     // and only the data stored within the object will change.
@@ -49,7 +50,7 @@ class GameViewModel : ViewModel() {
             // The word not used before assign it to the _currentScrambledWord
             _currentScrambledWord.value = String(tempWord)
             // Increase the currentWordCount
-            _currentWordCount++
+            _currentWordCount.value = _currentWordCount.value?.inc() // increment the value by one
             // Add the world to tracking list
             wordsList.add(currentWord)
         }
@@ -58,14 +59,14 @@ class GameViewModel : ViewModel() {
     /* Returns true if the current word count is less than MAX_NO_OF_WORDS.
      Updates the next word.
      */
-    fun nextWord() = if (currentWordCount < MAX_NO_OF_WORDS) {
+    fun nextWord() = if (_currentWordCount.value!! < MAX_NO_OF_WORDS) {
         getNextWord()
         true
     } else false
 
 
     private fun increaseScore() {
-        _score += SCORE_INCREASE
+        _score.value = _score.value?.plus(SCORE_INCREASE)
     }
 
     /*Helper method to validate player word*/
@@ -82,8 +83,8 @@ class GameViewModel : ViewModel() {
     * Re-initializes the game data to restart the game.
     */
     fun reinitializedData() {
-        _score = 0
-        _currentWordCount = 0
+        _score.value = 0
+        _currentWordCount.value = 0
         wordsList.clear()
         getNextWord()
     }
