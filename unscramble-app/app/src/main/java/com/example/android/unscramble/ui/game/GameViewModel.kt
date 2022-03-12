@@ -1,8 +1,12 @@
 package com.example.android.unscramble.ui.game
 
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.TtsSpan
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
@@ -16,7 +20,28 @@ class GameViewModel : ViewModel() {
     // val because the value of the LiveData/MutableLiveData object will remain the same,
     // and only the data stored within the object will change.
     private val _currentScrambledWord = MutableLiveData<String>()
-    val currentScrambledWord: LiveData<String> get() = _currentScrambledWord
+    /*A better user experience would be to have Talkback read aloud the individual characters of the scrambled word.
+    Within the GameViewModel, convert the scrambled word String to a Spannable string.
+    A spannable string is a string with some extra information attached to it. In this case,
+    we want to associate the string with a TtsSpan of TYPE_VERBATIM,
+    so that the text-to-speech engine reads aloud the scrambled word verbatim, character by character.*/
+    val currentScrambledWord: LiveData<Spannable> =
+        Transformations.map(_currentScrambledWord) {
+            if (it == null) {
+                SpannableString("")
+            } else {
+                val scrambledWord = it.toString()
+                val spannable: Spannable = SpannableString(scrambledWord)
+                spannable.setSpan(
+                    TtsSpan.VerbatimBuilder(scrambledWord).build(),
+                    0,
+                    scrambledWord.length,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                )
+                spannable
+            }
+
+        }
 
     private var wordsList: MutableList<String> = mutableListOf()
     private lateinit var currentWord: String
