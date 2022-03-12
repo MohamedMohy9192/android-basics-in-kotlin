@@ -47,7 +47,6 @@ class GameViewModel : ViewModel() {
     private lateinit var currentWord: String
 
     init {
-        Log.d("GameFragment", "GameViewModel created!")
         // Call getNextWord() to initialize the late init properties (_currentScrambledWord, currentWord)
         // while the view model instance is created
         getNextWord()
@@ -112,10 +111,5 @@ class GameViewModel : ViewModel() {
         _currentWordCount.value = 0
         wordsList.clear()
         getNextWord()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("GameFragment", "GameViewModel destroyed!")
     }
 }
