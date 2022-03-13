@@ -52,6 +52,9 @@ class PickupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding?.apply {
+            // This will set the lifecycle owner on the binding object.
+            // By setting the lifecycle owner, the app will be able to observe LiveData objects.
+            lifecycleOwner = viewLifecycleOwner
             // Bind the view model instance with the shared view model instance in the layout.
             viewModel = sharedViewModel
             nextButton.setOnClickListener { goToNextScreen() }

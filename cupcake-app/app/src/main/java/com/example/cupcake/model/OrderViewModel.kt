@@ -2,9 +2,14 @@ package com.example.cupcake.model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+
+const val PRICE_PER_CUPCAKE = 2.00
+private const val PRICE_FOR_SAME_DAY_PICKUP = 3.00
 
 class OrderViewModel : ViewModel() {
 
@@ -18,9 +23,14 @@ class OrderViewModel : ViewModel() {
     val date: LiveData<String> get() = _date
 
     private val _price: MutableLiveData<Double> = MutableLiveData()
-    val price: LiveData<Double> get() = _price
+    val price: LiveData<String>
+        get() = Transformations.map(_price) { price ->
+            // getCurrencyInstance() method in the NumberFormat class is used to convert
+            // the price to local currency format.
+            NumberFormat.getCurrencyInstance().format(price)
+        }
 
-    val dataOptions get() = getPickupOptions()
+    val dateOptions get() = getPickupOptions()
 
     init {
         // Initialize the properties when an instance of OrderViewModel is created.
@@ -29,14 +39,18 @@ class OrderViewModel : ViewModel() {
 
     fun setQuantity(numberCupcakes: Int) {
         _quantity.value = numberCupcakes
+        // Update the price variable when the quantity is set.
+        updatePrice()
     }
 
     fun setFlavor(desiredFlavor: String) {
         _flavor.value = desiredFlavor
     }
 
-    fun setData(pickupDate: String) {
-        _date.value = pickupDate
+    fun setData(date: String) {
+        _date.value = date
+        // Add the same day pickup charges if the user select the current day for pickup
+        updatePrice()
     }
 
     /**
@@ -70,7 +84,22 @@ class OrderViewModel : ViewModel() {
     fun resetOrder() {
         _quantity.value = 0
         _flavor.value = ""
-        _date.value = dataOptions[0]
+        _date.value = dateOptions[0]
         _price.value = 0.0
     }
+
+    /**
+     *  A helper method to calculate the price.
+     * */
+    private fun updatePrice() {
+        var calculatedPrice = (quantity.value ?: 0) * PRICE_PER_CUPCAKE
+        // Check if the user selected the same day pickup.
+        // Check if the date in the view model (_date.value) is the same
+        // as the first item in the dateOptions list which is always the current day.
+        if (dateOptions[0] == _date.value) {
+            calculatedPrice += PRICE_FOR_SAME_DAY_PICKUP
+        }
+        _price.value = calculatedPrice
+    }
+
 }
