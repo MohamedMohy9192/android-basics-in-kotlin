@@ -50,13 +50,8 @@ class StartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding?.apply {
-            // Set up the button click listeners
-            orderOneCupcake.setOnClickListener { orderCupcake(1) }
-            orderSixCupcakes.setOnClickListener { orderCupcake(6) }
-            orderTwelveCupcakes.setOnClickListener { orderCupcake(12) }
-        }
+        //  Bind the startFragment layout variable to the fragment instance.
+        binding?.startFragment = this@StartFragment
     }
 
     /**
