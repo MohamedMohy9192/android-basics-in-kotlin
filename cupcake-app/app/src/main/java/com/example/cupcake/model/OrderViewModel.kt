@@ -23,12 +23,11 @@ class OrderViewModel : ViewModel() {
     val date: LiveData<String> get() = _date
 
     private val _price: MutableLiveData<Double> = MutableLiveData()
-    val price: LiveData<String>
-        get() = Transformations.map(_price) { price ->
-            // getCurrencyInstance() method in the NumberFormat class is used to convert
-            // the price to local currency format.
-            NumberFormat.getCurrencyInstance().format(price)
-        }
+    val price: LiveData<String> = Transformations.map(_price) {
+        // getCurrencyInstance() method in the NumberFormat class is used to convert
+        // the price to local currency format.
+        NumberFormat.getCurrencyInstance().format(it)
+    }
 
     val dateOptions get() = getPickupOptions()
 

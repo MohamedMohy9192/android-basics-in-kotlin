@@ -15,6 +15,7 @@
  */
 package com.example.cupcake
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -67,7 +68,26 @@ class SummaryFragment : Fragment() {
      * Submit the order by sharing out the order details to another app via an implicit intent.
      */
     fun sendOrder() {
-        Toast.makeText(activity, "Send Order", Toast.LENGTH_SHORT).show()
+        val numberOfCupcakes = sharedViewModel.quantity.value ?: 0
+        val orderSummary = getString(
+            R.string.order_details,
+            resources.getQuantityString(R.plurals.cupcakes, numberOfCupcakes, numberOfCupcakes),
+            sharedViewModel.flavor.value.toString(),
+            sharedViewModel.date.value.toString(),
+            sharedViewModel.price.value.toString()
+        )
+
+        val sendEmail = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_EMAIL, "examle@gmail.com")
+            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.new_cupcake_order))
+            putExtra(Intent.EXTRA_TEXT, orderSummary)
+        }
+
+        // Accessing the PackageManager, which has information about what app packages are installed on the device
+        if (activity?.packageManager?.resolveActivity(sendEmail, 0) != null) {
+            startActivity(sendEmail)
+        }
     }
 
     /**
