@@ -30,4 +30,9 @@ class OrderViewModel : ViewModel() {
     fun setData(pickupDate: String) {
         _pickupDate.value = pickupDate
     }
+
+    /**
+     * check if the flavor for the order has been set or not.
+     */
+    fun hasNoFlavorSet() = _flavor.value.isNullOrEmpty()
 }
