@@ -47,24 +47,36 @@
                     android:id="@+id/option0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@{viewModel.date.equals(viewModel.dataOptions[0])}"
+                    android:onClick="@{()-> viewModel.setData(viewModel.dataOptions[0])}"
+                    android:text="@{viewModel.dataOptions[0]}"
                     tools:text="Thursday" />
 
                 <RadioButton
                     android:id="@+id/option1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@{viewModel.date.equals(viewModel.dataOptions[1])}"
+                    android:onClick="@{()-> viewModel.setData(viewModel.dataOptions[1])}"
+                    android:text="@{viewModel.dataOptions[1]}"
                     tools:text="Friday" />
 
                 <RadioButton
                     android:id="@+id/option2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@{viewModel.date.equals(viewModel.dataOptions[2])}"
+                    android:onClick="@{()-> viewModel.setData(viewModel.dataOptions[2])}"
+                    android:text="@{viewModel.dataOptions[2]}"
                     tools:text="Saturday" />
 
                 <RadioButton
                     android:id="@+id/option3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@{viewModel.date.equals(viewModel.dataOptions[3])}"
+                    android:onClick="@{()-> viewModel.setData(viewModel.dataOptions[3])}"
+                    android:text="@{viewModel.dataOptions[3]}"
                     tools:text="Sunday" />
             </RadioGroup>
 
