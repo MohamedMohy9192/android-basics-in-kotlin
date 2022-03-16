@@ -39,8 +39,8 @@ class OverviewViewModel : ViewModel() {
     val status: LiveData<String> = _status
 
     // MutableLiveData that can store a single MarsPhoto object.
-    private val _photos = MutableLiveData<MarsPhoto>()
-    val photos: LiveData<MarsPhoto> = _photos
+    private val _photos = MutableLiveData<List<MarsPhoto>>()
+    val photos: LiveData<List<MarsPhoto>> = _photos
 
     /**
      * Call getMarsPhotos() on init so we can display status immediately.
@@ -60,8 +60,8 @@ class OverviewViewModel : ViewModel() {
             // then resume and assign the response to the observable live data object
             Log.d(TAG, Thread.currentThread().toString())
             try {
-                _photos.value = MarsApi.service.getPhotos()[0]
-                _status.value = "First Mars image URL: ${_photos.value?.imgSrcUrl}"
+                _photos.value = MarsApi.service.getPhotos()
+                _status.value = "Success: Mars properties retrieved"
             } catch (e: Exception) {
                 _status.value = "Failure: ${e.message}"
             }
