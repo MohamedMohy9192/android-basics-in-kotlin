@@ -25,6 +25,8 @@ import com.example.android.marsphotos.network.MarsApi
 import com.example.android.marsphotos.network.MarsPhoto
 import kotlinx.coroutines.launch
 
+enum class MarsApiStatus { LOADING, ERROR, DONE }
+
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
@@ -33,10 +35,10 @@ private const val TAG = "OverviewViewModel"
 class OverviewViewModel : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
-    private val _status = MutableLiveData<String>()
+    private val _status = MutableLiveData<MarsApiStatus>()
 
     // The external immutable LiveData for the request status
-    val status: LiveData<String> = _status
+    val status: LiveData<MarsApiStatus> = _status
 
     // MutableLiveData that can store a single MarsPhoto object.
     private val _photos = MutableLiveData<List<MarsPhoto>>()
@@ -55,15 +57,19 @@ class OverviewViewModel : ViewModel() {
      */
     private fun getMarsPhotos() {
         viewModelScope.launch {
+            // This is the initial status while the coroutine is running and you're waiting for data.
+            _status.value = MarsApiStatus.LOADING
             // viewModelScope launch the coroutine on the main thread
             // suspend function suspend the coroutine until the response from the server is ready
             // then resume and assign the response to the observable live data object
             Log.d(TAG, Thread.currentThread().toString())
             try {
                 _photos.value = MarsApi.service.getPhotos()
-                _status.value = "Success: Mars properties retrieved"
+                _status.value = MarsApiStatus.DONE
             } catch (e: Exception) {
-                _status.value = "Failure: ${e.message}"
+                _status.value = MarsApiStatus.ERROR
+                // Set the _photos to an empty list. This clears the Recycler view.
+                _photos.value = listOf()
             }
         }
     }
