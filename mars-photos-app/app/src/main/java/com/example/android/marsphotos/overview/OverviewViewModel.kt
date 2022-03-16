@@ -38,6 +38,10 @@ class OverviewViewModel : ViewModel() {
     // The external immutable LiveData for the request status
     val status: LiveData<String> = _status
 
+    // MutableLiveData that can store a single MarsPhoto object.
+    private val _photos = MutableLiveData<MarsPhoto>()
+    val photos: LiveData<MarsPhoto> = _photos
+
     /**
      * Call getMarsPhotos() on init so we can display status immediately.
      */
@@ -56,8 +60,8 @@ class OverviewViewModel : ViewModel() {
             // then resume and assign the response to the observable live data object
             Log.d(TAG, Thread.currentThread().toString())
             try {
-                val listResult: List<MarsPhoto> = MarsApi.service.getPhotos()
-                _status.value = "Success: ${listResult.size} Mars photos retrieved"
+                _photos.value = MarsApi.service.getPhotos()[0]
+                _status.value = "First Mars image URL: ${_photos.value?.imgSrcUrl}"
             } catch (e: Exception) {
                 _status.value = "Failure: ${e.message}"
             }
