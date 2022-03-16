@@ -53,14 +53,15 @@
 
         <ImageView
             android:id="@+id/status_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:importantForAccessibility="no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:marsApiStatus="@{viewModel.status}" />
+            app:marsApiStatus="@{viewModel.status}"
+            tools:srcCompat="@drawable/loading_img" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
