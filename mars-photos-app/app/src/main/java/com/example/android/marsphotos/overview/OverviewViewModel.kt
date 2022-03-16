@@ -16,13 +16,19 @@
 
 package com.example.android.marsphotos.overview
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.android.marsphotos.network.MarsApi
+import kotlinx.coroutines.launch
 
 /**
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
+private const val TAG = "OverviewViewModel"
+
 class OverviewViewModel : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
@@ -30,6 +36,7 @@ class OverviewViewModel : ViewModel() {
 
     // The external immutable LiveData for the request status
     val status: LiveData<String> = _status
+
     /**
      * Call getMarsPhotos() on init so we can display status immediately.
      */
@@ -42,6 +49,10 @@ class OverviewViewModel : ViewModel() {
      * [MarsPhoto] [List] [LiveData].
      */
     private fun getMarsPhotos() {
-        _status.value = "Set the Mars API status response here!"
+        viewModelScope.launch() {
+            Log.d(TAG, Thread.currentThread().toString())
+            val listResult = MarsApi.service.getPhotos()
+            _status.value = listResult
+        }
     }
 }
