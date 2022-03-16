@@ -1,17 +1,26 @@
 package com.example.android.marsphotos.network
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
 
 private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com"
 
-// Retrofit needs the base URI for the web service, and a converter factory to build a web services API.
+/**
+ * Build the Moshi object with Kotlin adapter factory that Retrofit will be using.
+ */
+private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
+
+/**
+ * Retrofit needs the base URI for the web service, and a converter factory to build a web services API.
+ * */
 private val retrofit = Retrofit.Builder()
-    // The converter tells Retrofit what to do with the data it gets back from the web service.
-    // In this case, you want Retrofit to fetch a JSON response from the web service, and return it as a String
-    .addConverterFactory(ScalarsConverterFactory.create())
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(BASE_URL)
     .build()
 
@@ -24,9 +33,11 @@ interface MarsApiService {
      * and specify endpoint, for that web service method. In this case the endpoint is called photos.
      * */
     @GET("photos")
-    suspend fun getPhotos(): String
+    suspend fun getPhotos(): List<MarsPhoto>
 }
-
+/**
+ * A public Api object that exposes the lazy-initialized Retrofit service
+ */
 object MarsApi {
     val service: MarsApiService by lazy {
         retrofit.create()

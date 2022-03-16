@@ -22,6 +22,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.android.marsphotos.network.MarsApi
+import com.example.android.marsphotos.network.MarsPhoto
 import kotlinx.coroutines.launch
 
 /**
@@ -49,10 +50,17 @@ class OverviewViewModel : ViewModel() {
      * [MarsPhoto] [List] [LiveData].
      */
     private fun getMarsPhotos() {
-        viewModelScope.launch() {
+        viewModelScope.launch {
+            // viewModelScope launch the coroutine on the main thread
+            // suspend function suspend the coroutine until the response from the server is ready
+            // then resume and assign the response to the observable live data object
             Log.d(TAG, Thread.currentThread().toString())
-            val listResult = MarsApi.service.getPhotos()
-            _status.value = listResult
+            try {
+                val listResult: List<MarsPhoto> = MarsApi.service.getPhotos()
+                _status.value = "Success: ${listResult.size} Mars photos retrieved"
+            } catch (e: Exception) {
+                _status.value = "Failure: ${e.message}"
+            }
         }
     }
 }
