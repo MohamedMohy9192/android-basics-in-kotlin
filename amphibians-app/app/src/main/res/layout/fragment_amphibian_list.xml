@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2021 The Android Open Source Project.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +13,12 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.example.amphibians.ui.AmphibianViewModel" />
@@ -38,6 +37,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:listData="@{viewModel.amphibians}"
             tools:listitem="@layout/list_view_item" />
 
         <!-- TODO: set the apiStatus binding to the status from the view model -->
@@ -45,6 +45,7 @@
             android:id="@+id/status_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:apiStatus="@{viewModel.status}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

@@ -36,6 +36,9 @@ class AmphibianListFragment : Fragment() {
     ): View? {
         val binding = FragmentAmphibianListBinding.inflate(inflater)
         // TODO: call the view model method that calls the amphibians api
+        // Because we use shared model we need to call the API to get the amphibians data only
+        // when the AmphibianListFragment is instantiated
+        viewModel.getAmphibianList()
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.recyclerView.adapter = AmphibianListAdapter(AmphibianListener { amphibian ->
