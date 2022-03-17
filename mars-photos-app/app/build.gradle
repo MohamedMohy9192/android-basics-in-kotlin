@@ -49,6 +49,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    //The test resource directory needs to be explicitly specified as a "source" directory in the build file.
+    //This lets us access our resource files without having to type out the full path to the file in our code every time it is accessed in a test.
+
+    sourceSets {
+        test.resources.srcDirs += 'src/test/res'
+    }
 }
 
 dependencies {
@@ -73,4 +80,11 @@ dependencies {
     implementation 'com.squareup.moshi:moshi-kotlin:1.9.3'
     // Coil
     implementation "io.coil-kt:coil:2.0.0-rc01"
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    // This dependency lets us create a mock server. Essentially,
+    // the mock server intercepts network requests and reroutes them to
+    // return the mock data that we have defined
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.1"
 }
