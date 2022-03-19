@@ -16,5 +16,16 @@
 package com.example.inventory
 
 import android.app.Application
+import com.example.inventory.data.ItemRoomDatabase
 
-class InventoryApplication : Application()
+class InventoryApplication : Application() {
+
+    /**
+     * Use lazy delegate so the instance database is lazily created when you first need/access
+     * the reference (rather than when the app starts).
+     * */
+    val database: ItemRoomDatabase by lazy {
+        ItemRoomDatabase.getDatabase(this)
+    }
+}
+
