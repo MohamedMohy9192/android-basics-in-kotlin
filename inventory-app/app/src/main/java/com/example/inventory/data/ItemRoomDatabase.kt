@@ -5,6 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
+/**
+ * Database class with a singleton INSTANCE object.
+ */
 @Database(entities = [Item::class], version = 1, exportSchema = false)
 abstract class ItemRoomDatabase : RoomDatabase() {
 
@@ -28,8 +31,7 @@ abstract class ItemRoomDatabase : RoomDatabase() {
                     ItemRoomDatabase::class.java,
                     "item_database"
                 )
-                    // Allows Room to destructively recreate database tables if Migrations
-                    // that would migrate old database schemas to the latest schema version are not found.
+                    // Wipes and rebuilds instead of migrating if no Migration object.
                     .fallbackToDestructiveMigration()
                     .build()
 

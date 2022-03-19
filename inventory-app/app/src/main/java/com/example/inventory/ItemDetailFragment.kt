@@ -59,7 +59,9 @@ class ItemDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        // Retrieve the item details using the itemId.
+        // Attach an observer on the data (instead of polling for changes) and only update the
+        // the UI when the data actually changes.
         val id = navigationArgs.itemId
         viewModel.retrieveItem(id).observe(viewLifecycleOwner) { selectedItem ->
             item = selectedItem
@@ -67,6 +69,9 @@ class ItemDetailFragment : Fragment() {
         }
     }
 
+    /**
+     * Binds views with the passed in item data.
+     */
     private fun bind(item: Item) {
         binding.apply {
             itemName.text = item.itemName
@@ -104,6 +109,9 @@ class ItemDetailFragment : Fragment() {
         findNavController().navigateUp()
     }
 
+    /**
+     * Navigate to the Edit item screen.
+     */
     private fun editItem() {
         val action = ItemDetailFragmentDirections.actionItemDetailFragmentToAddItemFragment(
             getString(R.string.edit_fragment_title),

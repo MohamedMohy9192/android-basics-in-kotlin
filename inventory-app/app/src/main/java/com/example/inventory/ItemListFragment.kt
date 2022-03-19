@@ -57,6 +57,8 @@ class ItemListFragment : Fragment() {
                 ItemListFragmentDirections.actionItemListFragmentToItemDetailFragment(itemId = item.id)
             findNavController().navigate(action)
         }
+        // Attach an observer on the allItems list to update the UI automatically when the data
+        // changes.
         viewModel.allItems.observe(viewLifecycleOwner, { items ->
             adapter.submitList(items)
         })

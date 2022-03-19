@@ -3,6 +3,9 @@ package com.example.inventory.data
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Database access object to access the Inventory database
+ */
 @Dao
 interface ItemDao {
 
