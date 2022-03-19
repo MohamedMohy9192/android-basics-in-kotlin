@@ -53,7 +53,9 @@ class ItemListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val adapter = ItemListAdapter { item ->
-
+            val action =
+                ItemListFragmentDirections.actionItemListFragmentToItemDetailFragment(itemId = item.id)
+            findNavController().navigate(action)
         }
         viewModel.allItems.observe(viewLifecycleOwner, { items ->
             adapter.submitList(items)
