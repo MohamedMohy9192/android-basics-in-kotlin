@@ -10,9 +10,7 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
     val allItems: LiveData<List<Item>> = itemDao.getItems().asLiveData()
 
     private fun insertItem(item: Item) {
-        viewModelScope.launch {
-            itemDao.insert(item)
-        }
+        viewModelScope.launch { itemDao.insert(item) }
     }
 
     private fun getNewItemEntry(itemName: String, itemPrice: String, itemCount: String): Item {
@@ -30,6 +28,28 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
 
     fun retrieveItem(id: Int): LiveData<Item> {
         return itemDao.getItem(id).asLiveData()
+    }
+
+    private fun updateItem(item: Item) {
+        viewModelScope.launch { itemDao.update(item) }
+    }
+
+    fun sellItem(item: Item) {
+        if (item.quantityInStock > 0) {
+            // The copy() function is provided by default to all the instances of data classes.
+            // This function is used to copy an object for changing some of its properties,
+            // but keeping the rest of the properties unchanged.
+            val newItem = item.copy(quantityInStock = item.quantityInStock.minus(1))
+            updateItem(newItem)
+        }
+    }
+
+    fun deleteItem(item: Item) {
+        viewModelScope.launch { itemDao.delete(item) }
+    }
+
+    fun isStockAvailable(item: Item): Boolean {
+        return item.quantityInStock > 0
     }
 
     fun isEntryValid(itemName: String, itemPrice: String, itemCount: String): Boolean {
