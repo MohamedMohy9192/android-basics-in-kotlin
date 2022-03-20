@@ -4,10 +4,14 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.wordsapp.data.SettingsDataStore
 import com.example.wordsapp.databinding.FragmentLetterListBinding
+import kotlinx.coroutines.launch
 
 class LetterListFragment : Fragment() {
     private var _binding: FragmentLetterListBinding? = null
@@ -15,6 +19,9 @@ class LetterListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private var isLinearLayoutManager = true
+
+    private lateinit var settingsDataStore: SettingsDataStore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -33,6 +40,24 @@ class LetterListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.recyclerView
         chooseLayout()
+
+        // Initialize SettingsDataStore
+        settingsDataStore = SettingsDataStore(requireContext())
+        settingsDataStore.preferenceFlow.asLiveData()
+            .observe(viewLifecycleOwner) { isLinearManager ->
+                isLinearLayoutManager = isLinearManager
+                // update the RecyclerView layout.
+                chooseLayout()
+                //Once a menu is created, it's not redrawn every frame since it would be redundant
+                // to redraw the same menu every frame.
+                // The invalidateOptionsMenu() function tells Android to redraw the options menu.
+                // You can call this function when you change something in the Options menu,
+                // such as adding a menu item, deleting an item, or changing the menu text or icon.
+                // In this case, the menu icon was changed. Calling this method declares that
+                // the Options menu has changed, and so should be recreated.
+                // The onCreateOptionsMenu(android.view.Menu) method is called the next time it needs to be displayed.
+                activity?.invalidateOptionsMenu()
+            }
     }
 
     private fun chooseLayout() {
@@ -66,6 +91,12 @@ class LetterListFragment : Fragment() {
             isLinearLayoutManager = !isLinearLayoutManager
             chooseLayout()
             setIcon(item)
+            lifecycleScope.launch {
+                settingsDataStore.saveLayoutToPreferencesStore(
+                    isLinearLayoutManager,
+                    requireContext()
+                )
+            }
             true
         }
         else -> super.onOptionsItemSelected(item)
