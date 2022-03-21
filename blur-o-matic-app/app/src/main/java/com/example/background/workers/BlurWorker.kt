@@ -47,7 +47,7 @@ class BlurWorker(context: Context, workerParameters: WorkerParameters) :
             // Provide the Output URI as an output Data to make this temporary image
             // easily accessible to other workers for further operations.
             // This will be useful in the next chapter when you create a Chain of workers.
-            val outputData = workDataOf(KEY_IMAGE_URI to blurredPicture.toString())
+            val outputData = workDataOf(KEY_IMAGE_URI to blurredPictureUri.toString())
             Result.success(outputData)
         } catch (throwable: Throwable) {
             throwable.printStackTrace()
