@@ -22,6 +22,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -41,11 +42,36 @@ class BlurViewModel(application: Application) : ViewModel() {
     }
 
     /**
+     * Creates the input data bundle which includes the Uri to operate on
+     * @return Data which contains the Image Uri as a String
+     */
+    private fun createInputDataForUri(): Data {
+        // Input and output is passed in and out via Data objects.
+        // Data objects are lightweight containers for key/value pairs.
+        // They are meant to store a small amount of data that might pass into and out from WorkRequests.
+        val builder = Data.Builder()
+        // You're going to pass in the URI for the user's image into a bundle.
+        // That URI is stored in a variable called imageUri.
+        imageUri?.let { uri ->
+            builder.putString(KEY_IMAGE_URI, uri.toString())
+        }
+        return builder.build()
+    }
+
+    /**
      * Create the WorkRequest to apply the blur and save the resulting image
      * @param blurLevel The amount to blur the image
      */
     internal fun applyBlur(blurLevel: Int) {
-        workerManager.enqueue(OneTimeWorkRequest.from(BlurWorker::class.java))
+        // OneTimeWorkRequest: A WorkRequest that will only execute once.
+        // We only want the image to be blurred once when the Go button is clicked.
+        // workerManager.enqueue(OneTimeWorkRequest.from(BlurWorker::class.java))
+        val request = OneTimeWorkRequestBuilder<BlurWorker>()
+            // passing in the image uri in the data object
+            .setInputData(createInputDataForUri())
+            .build()
+        //Enqueues the work request using WorkManager request so that the work will be scheduled to run.
+        workerManager.enqueue(request)
     }
 
     private fun uriOrNull(uriString: String?): Uri? {
