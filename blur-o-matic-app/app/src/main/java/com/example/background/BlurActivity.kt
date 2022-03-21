@@ -16,6 +16,7 @@
 
 package com.example.background
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -38,6 +39,15 @@ class BlurActivity : AppCompatActivity() {
         binding = ActivityBlurBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.seeFileButton.setOnClickListener {
+            viewModel.outputUri?.let { uri ->
+                val actionView = Intent(Intent.ACTION_VIEW, uri)
+                if (packageManager?.resolveActivity(actionView, 0) != null) {
+                    startActivity(actionView)
+                }
+            }
+        }
+
         binding.goButton.setOnClickListener { viewModel.applyBlur(blurLevel) }
 
         viewModel.outputWorkInfos.observe(this, workInfosObserver())
@@ -46,14 +56,26 @@ class BlurActivity : AppCompatActivity() {
     private fun workInfosObserver(): Observer<List<WorkInfo>> {
         return Observer { listOfWorkInfo: List<WorkInfo> ->
 
+            // Note that these next few lines grab a single WorkInfo if it exists
+            // This code could be in a Transformation in the ViewModel; they are included here
+            // so that the entire process of displaying a WorkInfo is in one location.
+
             if (listOfWorkInfo.isNullOrEmpty()) {
                 return@Observer
             }
             // We only care about the saveImageToFile output status.
-            // We Only have one request tagged TAG_OUTPUT
+            // We Only have one worker request tagged TAG_OUTPUT
             val workInfo = listOfWorkInfo[0]
             if (workInfo.state.isFinished) {
                 showWorkFinished()
+                // Normally this processing, which is not directly related to drawing views on
+                // screen would be in the ViewModel. For simplicity we are keeping it here.
+                val outputImageUri = workInfo.outputData.getString(KEY_IMAGE_URI)
+                // If there is an output file show "See File" button
+                if (!outputImageUri.isNullOrEmpty()) {
+                    viewModel.setOutputUri(outputImageUri)
+                    binding.seeFileButton.visibility = View.VISIBLE
+                }
             } else {
                 showWorkInProgress()
             }
