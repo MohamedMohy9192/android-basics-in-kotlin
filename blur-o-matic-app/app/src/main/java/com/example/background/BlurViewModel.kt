@@ -20,6 +20,7 @@ import android.app.Application
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.*
@@ -33,11 +34,18 @@ class BlurViewModel(application: Application) : ViewModel() {
     // Retrieves the default singleton instance of WorkManager.
     private val workerManager = WorkManager.getInstance(application)
 
+    // New instance variable for the WorkInfo
+    internal var outputWorkInfos: LiveData<List<WorkInfo>>
+
     internal var imageUri: Uri? = null
     internal var outputUri: Uri? = null
 
     init {
         imageUri = getImageUri(application.applicationContext)
+        // This transformation makes sure that whenever the current work Id changes the WorkInfo
+        // the UI is listening to changes
+        // You can tag multiple WorkRequests with the same tag to associate them.
+        outputWorkInfos = workerManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
     }
 
     /**
@@ -90,6 +98,10 @@ class BlurViewModel(application: Application) : ViewModel() {
         }
         // Add WorkRequest to save the image to the filesystem
         val saveBlurredImageRequest = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
+            // You'll use a tag to label your work instead of using the WorkManager ID,
+            // because if your user blurs multiple images, all of the saving image WorkRequests
+            // will have the same tag but not the same ID.
+            .addTag(TAG_OUTPUT)
             .build()
         continuation = continuation.then(saveBlurredImageRequest)
 
