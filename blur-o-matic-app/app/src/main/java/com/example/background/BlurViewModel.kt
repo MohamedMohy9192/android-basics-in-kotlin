@@ -27,6 +27,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.background.workers.BlurWorker
+import com.example.background.workers.CleanupWorker
+import com.example.background.workers.SaveImageToFileWorker
 
 
 class BlurViewModel(application: Application) : ViewModel() {
@@ -64,14 +66,30 @@ class BlurViewModel(application: Application) : ViewModel() {
      */
     internal fun applyBlur(blurLevel: Int) {
         // OneTimeWorkRequest: A WorkRequest that will only execute once.
-        // We only want the image to be blurred once when the Go button is clicked.
-        // workerManager.enqueue(OneTimeWorkRequest.from(BlurWorker::class.java))
-        val request = OneTimeWorkRequestBuilder<BlurWorker>()
-            // passing in the image uri in the data object
-            .setInputData(createInputDataForUri())
+        val cleanupRequest = OneTimeWorkRequestBuilder<CleanupWorker>()
+            .build() // equivalent to OneTimeWorkRequest.from(CleanupWorker::class.java)
+        // Add WorkRequest to Cleanup temporary images
+        var continuation = workerManager.beginWith(cleanupRequest)
+        // Add WorkRequests to blur the image the number of times requested
+        for (i in 0 until blurLevel) {
+            // Add WorkRequest to blur the image
+            val blurRequest = OneTimeWorkRequest.Builder(BlurWorker::class.java)
+            // Input the Uri if this is the first blur operation
+            // After the first blur operation the input will be the output of previous
+            // blur operations.
+            if (i == 0) {
+                blurRequest.setInputData(createInputDataForUri())
+            }
+            continuation =
+                continuation.then(blurRequest.build()) // then() returns a new WorkContinuation instance
+        }
+        // Add WorkRequest to save the image to the filesystem
+        val saveBlurredImageRequest = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
             .build()
-        //Enqueues the work request using WorkManager request so that the work will be scheduled to run.
-        workerManager.enqueue(request)
+        continuation = continuation.then(saveBlurredImageRequest)
+
+        // Enqueues the WorkContinuation which is a chain of work
+        continuation.enqueue()
     }
 
     private fun uriOrNull(uriString: String?): Uri? {

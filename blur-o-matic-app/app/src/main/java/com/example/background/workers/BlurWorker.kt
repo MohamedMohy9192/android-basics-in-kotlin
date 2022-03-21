@@ -25,6 +25,10 @@ class BlurWorker(context: Context, workerParameters: WorkerParameters) :
         // Display a status notification using the function, makeStatusNotification
         // to notify the user about blurring the image.
         makeStatusNotification("Blurring image", appContext)
+
+        // ADD THIS TO SLOW DOWN THE WORKER
+        sleep()
+        // ^^^^
         return try {
             if (TextUtils.isEmpty(resourceUri)) {
                 Log.i(TAG, "Invalid input uri")
