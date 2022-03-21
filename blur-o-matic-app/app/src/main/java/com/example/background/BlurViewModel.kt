@@ -96,8 +96,14 @@ class BlurViewModel(application: Application) : ViewModel() {
             continuation =
                 continuation.then(blurRequest.build()) // then() returns a new WorkContinuation instance
         }
+        // Create charging constraint
+        val constraints = Constraints.Builder()
+            .setRequiresCharging(true)
+            .build()
+
         // Add WorkRequest to save the image to the filesystem
         val saveBlurredImageRequest = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java)
+            .setConstraints(constraints)
             // You'll use a tag to label your work instead of using the WorkManager ID,
             // because if your user blurs multiple images, all of the saving image WorkRequests
             // will have the same tag but not the same ID.
