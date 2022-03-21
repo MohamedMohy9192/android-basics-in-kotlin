@@ -42,7 +42,7 @@ class BlurActivity : AppCompatActivity() {
         binding.seeFileButton.setOnClickListener {
             viewModel.outputUri?.let { uri ->
                 val actionView = Intent(Intent.ACTION_VIEW, uri)
-                if (packageManager?.resolveActivity(actionView, 0) != null) {
+                actionView.resolveActivity(packageManager).run {
                     startActivity(actionView)
                 }
             }
