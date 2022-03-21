@@ -109,6 +109,12 @@ class BlurViewModel(application: Application) : ViewModel() {
         continuation.enqueue()
     }
 
+    internal fun cancelWork() {
+        // With WorkManager, you can cancel work using the id, by tag and by unique chain name.
+        // In this case, you'll want to cancel work by unique chain name, because you want to cancel all work in the chain, not just a particular step.
+        workerManager.cancelUniqueWork(IMAGE_MANIPULATION_WORK_NAME)
+    }
+
     private fun uriOrNull(uriString: String?): Uri? {
         return if (!uriString.isNullOrEmpty()) {
             Uri.parse(uriString)
