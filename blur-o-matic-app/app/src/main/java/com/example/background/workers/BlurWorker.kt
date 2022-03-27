@@ -10,8 +10,7 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.background.KEY_IMAGE_URI
 import com.example.background.R
-
-private const val TAG = "BlurWorker"
+import timber.log.Timber
 
 class BlurWorker(context: Context, workerParameters: WorkerParameters) :
     Worker(context, workerParameters) {
@@ -31,7 +30,7 @@ class BlurWorker(context: Context, workerParameters: WorkerParameters) :
         // ^^^^
         return try {
             if (TextUtils.isEmpty(resourceUri)) {
-                Log.i(TAG, "Invalid input uri")
+                Timber.i("Invalid input uri")
                 throw IllegalArgumentException("Invalid input uri")
             }
             // Create a Bitmap from the cupcake image:
@@ -46,12 +45,12 @@ class BlurWorker(context: Context, workerParameters: WorkerParameters) :
             makeStatusNotification("Blurred Image URI: $blurredPictureUri", appContext)
             // Provide the Output URI as an output Data to make this temporary image
             // easily accessible to other workers for further operations.
-            // This will be useful in the next chapter when you create a Chain of workers.
+            // This will be useful when you create a Chain of workers.
             val outputData = workDataOf(KEY_IMAGE_URI to blurredPictureUri.toString())
             Result.success(outputData)
         } catch (throwable: Throwable) {
             throwable.printStackTrace()
-            Log.e(TAG, "Error applying blur")
+            Timber.e("Error applying blur")
             Result.failure()
         }
     }
