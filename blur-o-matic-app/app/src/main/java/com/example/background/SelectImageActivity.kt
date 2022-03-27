@@ -125,7 +125,7 @@ class SelectImageActivity : AppCompatActivity() {
     }
 
     private fun handleImageRequestResult(intent: Intent) {
-        // If clipdata is available, we use it, otherwise we use data
+        // If clipData is available, we use it, otherwise we use data
         val imageUri: Uri? = intent.clipData?.let {
             it.getItemAt(0).uri
         } ?: intent.data

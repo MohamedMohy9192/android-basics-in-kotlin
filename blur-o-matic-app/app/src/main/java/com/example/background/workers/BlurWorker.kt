@@ -4,12 +4,10 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.background.KEY_IMAGE_URI
-import com.example.background.R
 import timber.log.Timber
 
 class BlurWorker(context: Context, workerParameters: WorkerParameters) :
