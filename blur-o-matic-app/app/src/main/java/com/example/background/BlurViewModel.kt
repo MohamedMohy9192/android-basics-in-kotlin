@@ -17,8 +17,6 @@
 package com.example.background
 
 import android.app.Application
-import android.content.ContentResolver
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -42,7 +40,6 @@ class BlurViewModel(application: Application) : ViewModel() {
     internal var outputUri: Uri? = null
 
     init {
-        imageUri = getImageUri(application.applicationContext)
         // This transformation makes sure that whenever the current work Id changes the WorkStatus
         // the UI is listening to changes
         // You can tag multiple WorkRequests with the same tag to associate them.
@@ -135,17 +132,8 @@ class BlurViewModel(application: Application) : ViewModel() {
         }
     }
 
-    private fun getImageUri(context: Context): Uri {
-        val resources = context.resources
-
-        val imageUri = Uri.Builder()
-            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-            .authority(resources.getResourcePackageName(R.drawable.android_cupcake))
-            .appendPath(resources.getResourceTypeName(R.drawable.android_cupcake))
-            .appendPath(resources.getResourceEntryName(R.drawable.android_cupcake))
-            .build()
-
-        return imageUri
+    internal fun setImageUri(uri: String?) {
+        imageUri = uriOrNull(uri)
     }
 
     internal fun setOutputUri(outputImageUri: String?) {
