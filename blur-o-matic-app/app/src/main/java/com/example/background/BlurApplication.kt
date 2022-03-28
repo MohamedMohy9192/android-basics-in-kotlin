@@ -23,13 +23,6 @@ import timber.log.Timber
 import timber.log.Timber.DebugTree
 
 class BlurApplication() : Application(), Configuration.Provider {
-    override fun onCreate() {
-        super.onCreate()
-        if (BuildConfig.DEBUG) {
-            Timber.plant(DebugTree())
-        }
-    }
-
     override fun getWorkManagerConfiguration(): Configuration {
         return if (BuildConfig.DEBUG) {
             Configuration.Builder()
@@ -39,6 +32,13 @@ class BlurApplication() : Application(), Configuration.Provider {
             Configuration.Builder()
                 .setMinimumLoggingLevel(android.util.Log.ERROR)
                 .build()
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
         }
     }
 }
