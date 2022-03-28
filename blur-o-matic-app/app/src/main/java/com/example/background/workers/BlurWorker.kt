@@ -8,6 +8,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.background.KEY_IMAGE_URI
+import com.example.background.PROGRESS
 import timber.log.Timber
 
 class BlurWorker(context: Context, workerParameters: WorkerParameters) :
@@ -24,7 +25,15 @@ class BlurWorker(context: Context, workerParameters: WorkerParameters) :
         makeStatusNotification("Blurring image", appContext)
 
         // ADD THIS TO SLOW DOWN THE WORKER
-        sleep()
+        //  sleep()
+        (0..100 step 10).forEach { progress ->
+            // The progress data shared with setProgressAsync() or setProgress(),
+            // saves your progress data in WorkManager's Room database.
+            // The progress data is only available while the Worker is in RUNNING state.
+            // As soon as the Worker reaches a final state, the progress information is purged from WorkManager's Room database.
+            setProgressAsync(workDataOf(PROGRESS to progress))
+            sleep()
+        }
         // ^^^^
         return try {
             if (TextUtils.isEmpty(resourceUri)) {

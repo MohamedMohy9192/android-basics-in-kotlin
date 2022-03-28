@@ -51,7 +51,10 @@ class BlurActivity : AppCompatActivity() {
         binding.goButton.setOnClickListener { viewModel.applyBlur(blurLevel) }
         binding.cancelButton.setOnClickListener { viewModel.cancelWork() }
 
-        viewModel.outputWorkInfos.observe(this, workInfosObserver())
+        // Show work status
+        viewModel.outputWorkInfoItems.observe(this, workInfosObserver())
+        // Show work progress
+        viewModel.progressWorkInfoItems.observe(this, ::progressObserver)
     }
 
     private fun workInfosObserver(): Observer<List<WorkInfo>> {
@@ -83,6 +86,18 @@ class BlurActivity : AppCompatActivity() {
         }
     }
 
+    private fun progressObserver(listOfWorkInfo: List<WorkInfo>) {
+        if (listOfWorkInfo.isNullOrEmpty())
+            return
+
+        listOfWorkInfo.forEach { workInfo ->
+            if (workInfo.state == WorkInfo.State.RUNNING) {
+                val progress = workInfo.progress.getInt(PROGRESS, 0)
+                binding.progressBar.progress = progress
+            }
+        }
+    }
+
     /**
      * Shows and hides views for when the Activity is processing an image
      */
@@ -101,6 +116,7 @@ class BlurActivity : AppCompatActivity() {
     private fun showWorkFinished() {
         with(binding) {
             progressBar.visibility = View.GONE
+            progressBar.progress = 0 // restart at the initial position
             cancelButton.visibility = View.GONE
             goButton.visibility = View.VISIBLE
         }

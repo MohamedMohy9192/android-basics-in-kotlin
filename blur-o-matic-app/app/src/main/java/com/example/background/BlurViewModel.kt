@@ -35,17 +35,19 @@ class BlurViewModel(application: Application) : ViewModel() {
     private val workerManager = WorkManager.getInstance(application)
 
     // New instance variable for the WorkInfo
-    internal var outputWorkInfos: LiveData<List<WorkInfo>>
+    internal var outputWorkInfoItems: LiveData<List<WorkInfo>>
+    internal var progressWorkInfoItems: LiveData<List<WorkInfo>>
 
     internal var imageUri: Uri? = null
     internal var outputUri: Uri? = null
 
     init {
         imageUri = getImageUri(application.applicationContext)
-        // This transformation makes sure that whenever the current work Id changes the WorkInfo
+        // This transformation makes sure that whenever the current work Id changes the WorkStatus
         // the UI is listening to changes
         // You can tag multiple WorkRequests with the same tag to associate them.
-        outputWorkInfos = workerManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
+        outputWorkInfoItems = workerManager.getWorkInfosByTagLiveData(TAG_OUTPUT)
+        progressWorkInfoItems = workerManager.getWorkInfosByTagLiveData(TAG_PROGRESS)
     }
 
     /**
@@ -93,6 +95,9 @@ class BlurViewModel(application: Application) : ViewModel() {
             if (i == 0) {
                 blurRequest.setInputData(createInputDataForUri())
             }
+            // Add this tag so that you can retrieve its WorkInfo.
+            // From that WorkInfo, you can retrieve the worker's progress information:
+            blurRequest.addTag(TAG_PROGRESS)
             continuation =
                 continuation.then(blurRequest.build()) // then() returns a new WorkContinuation instance
         }
@@ -117,7 +122,8 @@ class BlurViewModel(application: Application) : ViewModel() {
 
     internal fun cancelWork() {
         // With WorkManager, you can cancel work using the id, by tag and by unique chain name.
-        // In this case, you'll want to cancel work by unique chain name, because you want to cancel all work in the chain, not just a particular step.
+        // In this case, you'll want to cancel work by unique chain name, because you want to
+        // cancel all work in the chain, not just a particular step.
         workerManager.cancelUniqueWork(IMAGE_MANIPULATION_WORK_NAME)
     }
 
